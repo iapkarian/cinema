@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter
+from db import Ticket
 
 class Window(tkinter.Tk):
     def __init__(self):
@@ -34,14 +35,28 @@ class Window(tkinter.Tk):
         but_buy.bind("<Button-1>", self.buy_tic)
         but_buy.grid(row=6, column=23, rowspan=10)
 
+    def Sell_tickets(self):
+        for i in range(1, 10):
+            for j in range(1, 20):
+                try:
+                    ticket = Ticket.get(Ticket.line == i, Ticket.seat == j, )
+                except:
+                    pass
+
     def reservation(self, event, row, column):
         bg_color = event.widget["background"]
         if bg_color != "grey":
+            ticket = Ticket(line=row-1, seat=column-1, )
             if bg_color == "red":
+                ticket.price = 50
+                ticket.type_seat = 'red'
                 self.SUM_All += 50
             elif bg_color == "blue":
+                ticket.price = 45
+                ticket.type_seat = 'blue'
                 self.SUM_All += 45
             event.widget["background"] = "grey"
+            ticket.save()
         elif bg_color == "grey" and self.SUM_All != 0:
             if row <= 3:
                 self.SUM_All -= 45
@@ -49,11 +64,24 @@ class Window(tkinter.Tk):
             else:
                 self.SUM_All -= 50
                 event.widget["background"] = "red"
+            Ticket.delete().where(Ticket.line == row-1, Ticket.seat == column-1).execute()
         self.lbl_sum.destroy()
         self.lbl_sum = Label(self.hall, text=self.SUM_All, font="Arial 12")
         self.lbl_sum.grid(row=4, column=23, rowspan=10)
 
+        for ticket in Ticket.select():
+            print(ticket.line, ticket.seat, ticket.price, ticket.type_seat)
+
     def create_hall(self):
+        sell_ticket = []
+        for j in range(1, 11):
+            for i in range(1, 21):
+                try:
+                    Ticket.get(Ticket.line == j, Ticket.seat == i, )
+                    sell_ticket.append((j, i))
+                except Ticket.DoesNotExist:
+                    pass
+        # print(sell_ticket)
         self.hall.pack()
         screen = Frame(self.hall, width=500, height=20, bg="yellow")
         screen.grid(row=0, column=2, columnspan=20)
@@ -63,7 +91,9 @@ class Window(tkinter.Tk):
         for j in range(1, 11):
             self.Num_row(j, 1)
             for i in range(1, 21):
-                if j >= 3:
+                if (j, i) in sell_ticket:
+                    color = 'grey'
+                elif j >= 3:
                     color = "red"
                 else:
                     color = "blue"
