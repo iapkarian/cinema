@@ -1,6 +1,7 @@
 from tkinter import *
 from db import Ticket
 
+
 class MainWindow:
     def __init__(self, master):
         # root = Tk()
