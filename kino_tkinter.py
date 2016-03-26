@@ -1,22 +1,60 @@
 from tkinter import *
-import tkinter
 from db import Ticket
 
-class Window(tkinter.Tk):
-    def __init__(self):
-        tkinter.Tk.__init__(self)
+class MainWindow:
+    def __init__(self, master):
+        # root = Tk()
+        self.master = master
+        self.master.title('parent')
+        self.master.geometry('200x150+300+225')
+        self.but1 = Button(self.master,
+                           text='Hall №1',
+                           font='Arial 12',
+                           command=self.open_first_win)
+        self.but1.pack()
+        self.but2 = Button(self.master,
+                           text='Hall №2',
+                           font='Arial 12',
+                           command=self.open_second_win)
+        self.but2.pack()
+        self.master.mainloop()
+
+    def create_menu(self):
+        notebook = Notebook(root)
+
+        notebook.add(Frame(width=400, height=300), text="TAB 1")
+        notebook.add(Frame(width=400, height=300), text="TAB 2")
+        notebook.add(Frame(width=400, height=300), text="TAB 3")
+        notebook.bind_all("<<NotebookTabChanged>>", self.master.tabChangedEvent)
+        notebook.pack()
+
+    def open_first_win(self):
+        FirstHall(self.master)
+
+    def open_second_win(self):
+        SecondHall(self.master)
+
+class FirstHall:
+    def __init__(self, master):
+        self.slave = Toplevel(master)
+        self.slave.title('Hall №1')
         self.SUM_All = 0
         self.places = []
         self.cal = False
-        self.hall = Frame(self, width=500, height=300, )
-        self.lbl = Label(self, text="Hall №1", font="Arial 12")
+        self.hall = Frame(self.slave, width=500, height=300, )
+        self.lbl = Label(self.slave,
+                         text="Hall №1",
+                         font="Arial 12", )
         self.lbl.pack()
         self.lbl_sum = Label(self.hall, text=self.SUM_All, font="Arial 12")
         self.lbl_sum.grid(row=2, column=23, rowspan=10)
         self.create_hall()
-        self.Menu_hall()
+        self.menu_hall()
+        self.slave.grab_set()
+        self.slave.focus_set()
+        self.slave.wait_window()
 
-    def Num_row(self, j, i):
+    def num_row(self, j, i):
         num_row = Label(self.hall, text=j)
         num_row.grid(row=j+1, column=i)
 
@@ -24,7 +62,7 @@ class Window(tkinter.Tk):
         self.SUM_All = 0
         self.lbl_sum.destroy()
 
-    def Menu_hall(self):
+    def menu_hall(self):
         menu_hall = Frame(self.hall, width=100, height=300)
         menu_hall.grid(row=2, column=23, rowspan=10)
         lbl = Label(self.hall,
@@ -34,14 +72,6 @@ class Window(tkinter.Tk):
         but_buy = Button(self.hall, text="Buy!", font="Arial 12")
         but_buy.bind("<Button-1>", self.buy_tic)
         but_buy.grid(row=6, column=23, rowspan=10)
-
-    def Sell_tickets(self):
-        for i in range(1, 10):
-            for j in range(1, 20):
-                try:
-                    ticket = Ticket.get(Ticket.line == i, Ticket.seat == j, )
-                except:
-                    pass
 
     def reservation(self, event, row, column):
         bg_color = event.widget["background"]
@@ -69,9 +99,6 @@ class Window(tkinter.Tk):
         self.lbl_sum = Label(self.hall, text=self.SUM_All, font="Arial 12")
         self.lbl_sum.grid(row=4, column=23, rowspan=10)
 
-        for ticket in Ticket.select():
-            print(ticket.line, ticket.seat, ticket.price, ticket.type_seat)
-
     def create_hall(self):
         sell_ticket = []
         for j in range(1, 11):
@@ -81,7 +108,6 @@ class Window(tkinter.Tk):
                     sell_ticket.append((j, i))
                 except Ticket.DoesNotExist:
                     pass
-        # print(sell_ticket)
         self.hall.pack()
         screen = Frame(self.hall, width=500, height=20, bg="yellow")
         screen.grid(row=0, column=2, columnspan=20)
@@ -89,7 +115,7 @@ class Window(tkinter.Tk):
         named.grid(row=1, column=2, columnspan=20)
 
         for j in range(1, 11):
-            self.Num_row(j, 1)
+            self.num_row(j, 1)
             for i in range(1, 21):
                 if (j, i) in sell_ticket:
                     color = 'grey'
@@ -101,11 +127,32 @@ class Window(tkinter.Tk):
                              bg=color)
                 but.bind("<Button-1>", lambda event, row=j+1, column=i+1: self.reservation(event, row, column))
                 but.grid(row=j+1, column=i+1)
-            self.Num_row(j, 22)
+            self.num_row(j, 22)
 
-if __name__ == '__main__':
-    window_obj = Window()
-    window_obj.mainloop()
+class SecondHall:
+    def __init__(self, master):
+        self.slave2 = Toplevel(master)
+        self.slave2.title('Hall №2')
+        self.SUM_All = 0
+        self.places = []
+        self.cal = False
+        self.hall = Frame(self.slave2, width=500, height=300, )
+        self.lbl = Label(self.slave2,
+                         text="Hall №2",
+                         font="Arial 12")
+        self.lbl.pack()
+        self.lbl_sum = Label(self.hall, text=self.SUM_All, font="Arial 12")
+        self.lbl_sum.grid(row=2, column=23, rowspan=10)
+        # self.create_hall()
+        # self.menu_hall()
+        self.slave2.grab_set()
+        self.slave2.focus_set()
+        self.slave2.wait_window()
+
+    # def create_hall(self):
+
+root = Tk()
+MainWindow(root)
 
 
 
