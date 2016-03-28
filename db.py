@@ -11,8 +11,21 @@ class Ticket(Model):
 
     class Meta:
         database = db
+class Film(Model):
+    name = TextField()
+    duration = IntegerField()
 
-# class Session(Model):
+    class Meta:
+        database = db
+
+class Session(Model):
+    time_start = DateTimeField()
+    film = ForeignKeyField(Film)
+    price_low = IntegerField()
+    price_height = IntegerField()
+
+    class Meta:
+        database = db
 
 
 

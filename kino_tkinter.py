@@ -1,39 +1,88 @@
 from tkinter import *
+from tkinter import ttk
 from db import Ticket
-
+from datetime import *
 
 class MainWindow:
     def __init__(self, master):
-        # root = Tk()
         self.master = master
         self.master.title('parent')
-        self.master.geometry('200x150+300+225')
-        self.but1 = Button(self.master,
-                           text='Hall №1',
-                           font='Arial 12',
-                           command=self.open_first_win)
-        self.but1.pack()
-        self.but2 = Button(self.master,
-                           text='Hall №2',
-                           font='Arial 12',
-                           command=self.open_second_win)
-        self.but2.pack()
+        self.master.geometry('550x400+300+225')
+        self.create_menu()
         self.master.mainloop()
 
-    def create_menu(self):
-        notebook = Notebook(root)
 
-        notebook.add(Frame(width=400, height=300), text="TAB 1")
-        notebook.add(Frame(width=400, height=300), text="TAB 2")
-        notebook.add(Frame(width=400, height=300), text="TAB 3")
-        notebook.bind_all("<<NotebookTabChanged>>", self.master.tabChangedEvent)
+
+    def create_film(self):
+        Films(self.master)
+
+    def create_menu(self):
+        notebook = ttk.Notebook(root)
+        today = datetime.today()
+        lbl = Label(self.master, text='MOST-CINEMA', font='Arial 20')
+        lbl.pack()
+        films = ttk.Combobox()
+        films['values'] = ('Film 1', )
+        films.pack()
+        but = Button(self.master, text='Create film', command=self.create_film)
+        but.pack()
+        but1 = Button(self.master,
+                      text='Hall №1',
+                      command=self.open_first_win)
+        but1.pack()
+        but2 = Button(self.master,
+                      text='Hall №2',
+                      command=self.open_second_win)
+        but2.pack()
+        notebook.add(Frame(width=400, height=300),
+                     text=today.strftime('%a  %d.%m'))
+        for i in range(1, 7):
+            tomorrow = today.date() + timedelta(days=i)
+            tomorrow = tomorrow.strftime('%a  %d.%m')
+            notebook.add(Frame(width=800, height=300),
+                         text=tomorrow,)
+        notebook.bind_all("<<NotebookTabChanged>>",) #self.master.tabChangedEvent)
+
         notebook.pack()
+
+    def tabChanged(self):
+        pass
 
     def open_first_win(self):
         FirstHall(self.master)
 
     def open_second_win(self):
         SecondHall(self.master)
+
+class Films:
+    def __init__(self, master):
+        self.slave = Toplevel(master)
+        self.slave.title('Create/delete film')
+        self.slave.geometry('500x300')
+        self.new_film()
+
+    def new_film(self):
+        lbl1 = Label(self.slave, text='Create new film:', font='Arial 18')
+        lbl2 = Label(self.slave, text='Name:', font='Arial 12')
+        lbl3 = Label(self.slave, text='Duration:', font='Arial 12')
+        ent1 = Entry(self.slave, width=20, bd=3,)
+        ent2 = Entry(self.slave, width=20, bd=3)
+        but_create = Button(self.slave, text='Create', font='Arial 12')
+
+        lbl1.grid(row=1, column=15)
+        lbl2.grid(row=2, column=2)
+        lbl3.grid(row=2, column=20)
+        ent1.grid(row=3, column=2)
+        ent2.grid(row=3, column=20)
+        but_create.grid(row=5, column=15)
+
+        lbl4 = Label(self.slave, text='Delete film:', font='Arial 18')
+        lst = Text(self.slave, height=7, width=15, font="Verdana 12", wrap=WORD)
+        but_delete = Button(self.slave, text='Delete', font='Arial 12')
+
+        lbl4.grid(row=9, column=15)
+        lst.grid(row=10, column=2, columnspan=10)
+        but_delete.grid(row=10, column=15)
 
 class FirstHall:
     def __init__(self, master):
