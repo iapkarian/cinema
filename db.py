@@ -11,6 +11,7 @@ class Ticket(Model):
 
     class Meta:
         database = db
+
 class Film(Model):
     name = TextField()
     duration = IntegerField()
@@ -27,5 +28,5 @@ class Session(Model):
     class Meta:
         database = db
 
-
-
+def groupby():
+    pass
