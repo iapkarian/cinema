@@ -1,5 +1,7 @@
 # Cinema
 
+Application for cinemas. There is a choice of the film, ticket reservation and purchase tickets.
+
 Technology summary:
 
 1. [Peewee: ORM](http://peewee.readthedocs.org/en/latest/ "Peewee")
